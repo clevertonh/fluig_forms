@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html ng-app="listTelefonica">
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/app.css">
+	<script src="lib/angular.js" type="text/javascript"></script>
+	<script src="lib/angular-locale_pt-br.js" type="text/javascript"></script>
+	<script src="lib/angular-messages.js" type="text/javascript"></script>
+	<script src="js/app.js" type="text/javascript"></script>
+	<script src="js/controllers/listaTelefonicaCtrl.js" type="text/javascript"></script>
+</head>
+<body ng-controller="listaTelefonicaCtrl">
+	<div class="jumbotron">
+		<h4 class="text-center">{{app}}</h4>
+	</div>
+	<div class="col-md-4">
+		<input type="text" class="form-control" ng-model="busca" placeholder="Buscar">
+		<br>
+		<table class="table table-bordered">
+			<tr>
+				<th></th>
+				<th><a href="" ng-click="ordernarPor('nome')">Nome</th>
+				<th><a href="" ng-click="ordernarPor('telefone')">Telefone</th>
+				<th>Operadora</th>
+				<th>Data</th>
+			</tr>
+			<tr ng-class="{selecionado: contato.selecionado}" ng-repeat="contato in contatos | filter: {nome: busca} | orderBy: order_campo:direcaoOrdenacao">
+				<td><input type="checkbox" ng-model="contato.selecionado"></td>
+				<td>{{contato.nome}}</td>
+				<td>{{contato.telefone}}</td>
+				<td>{{contato.operadora.nome}}</td>
+				<td>{{contato.data | date: 'EEE dd/MM/yyyy HH:mm'}}</td>
+			</tr>
+		</table>
+		<hr>
+		<form name="contatoForm">
+			<input type="text" class="form-control col-md-4" ng-model="contato.nome" name="txtNome" ng-required="true" ng-minlength="10">
+			<br><br>
+			<input type="text" class="form-control col-md-4" ng-model="contato.telefone" name="txtTelefone" ng-required="true" ng-pattern="/^\d{4,5}-\d{4}$/">
+			<br><br>
+			<select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome + ' ( ' + (operadora.preco | currency) + ' ) ' for operadora in operadoras | orderBy: 'nome'">
+				<option value="">Selecione uma Operadora</option>
+			</select>
+			<br><br>
+		</form>
+		<div ng-messages="contatoForm.txtNome.$error" class="alert alert-danger">
+			<div ng-message="required">
+				<p>Favor preencher o campo nome!</p>
+			</div>
+			<div ng-message="minlength"">
+				<p>O campo deve ter mais de 10 caracteres!</p>
+			</div>
+		</div>
+
+		</form>
+		<div ng-messages="contatoForm.txtTelefone.$error" class="alert alert-danger">
+			<div ng-message="required">
+				<p>Favor preencher o campo telefone!</p>
+			</div>
+			<div ng-message="pattern">
+				<p>O campo deve ter o formato 99999-9999!</p>
+			</div>
+		</div>
+		<button type="button" class="btn btn-success" ng-click="adicionarContato(contato)" ng-disabled="contatoForm.$invalid">Adicionar Contato</button>
+		<button type="button" class="btn btn-danger" ng-click="apagarContatos(contatos)" ng-disabled="!isContatoSelecionado(contatos)">Apagar Contato</button>
+	</div>
+</body>
+</html>
